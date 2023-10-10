@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query, Body
 import uvicorn
 from typing import List
 from pydantic import BaseModel, Field
@@ -12,9 +12,17 @@ class Student(BaseModel):
     subjects: List[str] = []
 
 
-@app.post("/students")
-async def student_data(s1: Student):
-    return s1
+# Populating request body using pydantic model object
+@app.post("/students/{college}")
+async def student_data(college: str, age: int, s1: Student):
+    res = {"college": college, "age": age, **s1.model_dump()}
+    return res
+
+
+# You can also populate request body using Body class of fastapi
+@app.post("/students/add/marks")
+async def student_marks(name: str = Body(...), marks: float = Body(ge=0, le=100)):
+    return {"name": name, "marks": marks}
 
 
 @app.get("/")
