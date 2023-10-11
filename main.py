@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request, Path, Query, Body
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from typing import List
 from pydantic import BaseModel, Field
+import aiofiles
 
 app = FastAPI()
 
@@ -67,6 +69,8 @@ templates = Jinja2Templates(
 
 # Rendering HTML response instead of JSON
 # It also shows us how to use the Request object directly i.e (no need to pass it as a query or path param)
-@app.get("/Greetings/", response_class=HTMLResponse)
-async def greet_the_world(request: Request):
-    return templates.TemplateResponse(name="hello.html", context={"request": request})
+@app.get("/Greetings/{name}", response_class=HTMLResponse)
+async def greet_the_world(request: Request, name: str = Path(min_length=1)):
+    return templates.TemplateResponse(
+        name="hello.html", context={"request": request, "name": name}
+    )
