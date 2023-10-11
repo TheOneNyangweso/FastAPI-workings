@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Path, Query, Body
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 import uvicorn
 from typing import List
 from pydantic import BaseModel, Field
@@ -56,3 +58,17 @@ async def hello(
     percent: float = Query(..., ge=0, le=100)
 ):
     return {"Hello": name, "age": age, "percentage": percent}
+
+
+templates = Jinja2Templates(directory='/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates')
+
+# Rendering HTML response instead of JSON
+@app.get("/Greetings/")
+async def greet_the_world():
+    ret = """
+    <html>
+    <body>
+    <h2>Hello World!</h2>
+    </body>
+    </html>"""
+    return HTMLResponse(content=ret)
