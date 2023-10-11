@@ -65,6 +65,11 @@ async def hello(
 templates = Jinja2Templates(
     directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates"
 )
+app.mount(
+    path="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static",
+    app=StaticFiles(directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static"),
+    name="Static",
+)
 
 
 # Rendering HTML response instead of JSON
