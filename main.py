@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Path, Query, Body
+from fastapi import FastAPI, Request, Path, Query, Body
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import uvicorn
@@ -60,15 +60,13 @@ async def hello(
     return {"Hello": name, "age": age, "percentage": percent}
 
 
-templates = Jinja2Templates(directory='/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates')
+templates = Jinja2Templates(
+    directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates"
+)
+
 
 # Rendering HTML response instead of JSON
-@app.get("/Greetings/")
-async def greet_the_world():
-    ret = """
-    <html>
-    <body>
-    <h2>Hello World!</h2>
-    </body>
-    </html>"""
-    return HTMLResponse(content=ret)
+# It also shows us how to use the Request object directly i.e (no need to pass it as a query or path param)
+@app.get("/Greetings/", response_class=HTMLResponse)
+async def greet_the_world(request: Request):
+    return templates.TemplateResponse(name="hello.html", context={"request": request})
