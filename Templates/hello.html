@@ -1,5 +1,11 @@
 <html>
-    <body>
+    <head>
+        <title>My Website</title>
+        <script src= "{{ url_for('Static', path='hello.js') }}"></script>
+    </head>
+    <body onload="myFunction()">
+        <div id="time" style="text-align:right"; width="100%"></div>
+        <h1><div id = "ttl">{{name}}</div></h1>
         <h2>Hello {{name}} to my world!</h2>
         <img src = "{{ url_for('Static', path='Record-of-Ragnarok-Fighters.jpg') }}" alt="Image here" width="300">
     </body> 
