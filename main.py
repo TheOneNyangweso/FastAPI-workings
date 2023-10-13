@@ -63,11 +63,12 @@ async def hello(
 
 
 templates = Jinja2Templates(
-    directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates"
+    directory="/home/nyangweso/Desktop/Projects/FastAPI-workings/Templates"
 )
 app.mount(
-    path="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static",
-    app=StaticFiles(directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static"),
+    path="/home/nyangweso/Desktop/Projects/FastAPI-workings/Static",
+    app=StaticFiles(
+        directory="/home/nyangweso/Desktop/Projects/FastAPI-workings/Static"),
     name="Static",  # name which will be used in the 'url_for' param in html file
 )
 
