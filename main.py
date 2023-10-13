@@ -80,3 +80,10 @@ async def greet_the_world(request: Request, name: str = Path(min_length=1)):
     return templates.TemplateResponse(
         name="hello.html", context={"request": request, "name": name}
     )
+
+# Function to render login.html
+
+
+@app.get("/login/", response_class=HTMLResponse)
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
