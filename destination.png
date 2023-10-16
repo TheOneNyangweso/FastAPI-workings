@@ -1,0 +1,1 @@
+SELECT TOP 5 * FROM dbo.[credit _card_transactions] 

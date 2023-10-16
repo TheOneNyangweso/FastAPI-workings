@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request, Path, Query, Body, Form
+from fastapi import FastAPI, Request, Path, Query, Body, Form, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
+import shutil
 from typing import List
 from pydantic import BaseModel, Field
 import aiofiles
@@ -98,3 +99,16 @@ async def login(request: Request):
 @app.post("/submit")
 async def submit(name: str = Form(...), pwd: str = Form(...)):
     return UserDetails(name=name, password=pwd)
+
+# To render upload.html to client
+@app.get("/upload", response_class=HTMLResponse)
+async def upload_file(request: Request):
+    return templates.TemplateResponse("upload.html", {"request":request})
+
+# To handle the upload operation to server
+@app.post("/uploader")
+async def create_upload_file(file: UploadFile = File(...)):
+    with open("destination.png", "wb") as buffer: # Using any other name apart from destination.png brings up errors
+        shutil.copyfileobj(file.file, buffer)
+    
+    return {"filename": file.filename}
