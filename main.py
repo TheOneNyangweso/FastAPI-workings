@@ -107,7 +107,7 @@ async def upload_file(request: Request):
     return templates.TemplateResponse("upload.html", {"request":request})
 
 # To handle the upload operation to server
-@app.post("/uploader"/)
+@app.post("/uploader/")
 async def create_upload_file(file: UploadFile = File(...)):
     with open("destination.png", "wb") as buffer: # Using any other name apart from destination.png brings up errors
         shutil.copyfileobj(file.file, buffer)
