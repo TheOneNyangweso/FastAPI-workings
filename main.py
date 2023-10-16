@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request, Path, Query, Body, Form, UploadFile, File
+from fastapi import FastAPI, Request, Path, Query, Body, Form, UploadFile, File, Cookie
 from fastapi.responses import HTMLResponse
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -96,19 +97,33 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.post("/submit")
+@app.post("/submit/")
 async def submit(name: str = Form(...), pwd: str = Form(...)):
     return UserDetails(name=name, password=pwd)
 
 # To render upload.html to client
-@app.get("/upload", response_class=HTMLResponse)
+@app.get("/upload/", response_class=HTMLResponse)
 async def upload_file(request: Request):
     return templates.TemplateResponse("upload.html", {"request":request})
 
 # To handle the upload operation to server
-@app.post("/uploader")
+@app.post("/uploader"/)
 async def create_upload_file(file: UploadFile = File(...)):
     with open("destination.png", "wb") as buffer: # Using any other name apart from destination.png brings up errors
         shutil.copyfileobj(file.file, buffer)
     
     return {"filename": file.filename}
+
+@app.post("/cookie/")
+def create_cookie():
+    content = {"message":"cookie set"}
+    response = JSONResponse(content = content)
+    # Setting the cookie parameter on the response object
+    response.set_cookie(key = "username", value="admin")
+    
+    return response
+
+# Reading the cookie object on the subsequent visits
+@app.get("/readcookie/")
+async def read_cookie(username: str = Cookie(None)):
+    return {"username": username}
