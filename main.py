@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Request, Path, Query, Body, Form, UploadFile, File, Cookie
+from fastapi import FastAPI, Request, Path, Query, Body, Form, UploadFile, File, Cookie, Header
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 import shutil
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 import aiofiles
 
@@ -70,12 +70,12 @@ async def hello(
 
 
 templates = Jinja2Templates(
-    directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Templates"
+    directory="/home/nyangweso/Desktop/Projects/FastAPI-workings/Templates"
 )
 app.mount(
-    path="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static",
+    path="/home/nyangweso/Desktop/Projects/FastAPI-workings/Static",
     app=StaticFiles(
-        directory="/home/nyangweso/Desktop/Ds_1/FastAPI-workings/Static"),
+        directory="/home/nyangweso/Desktop/Projects/FastAPI-workings/Static"),
     name="Static",  # name which will be used in the 'url_for' param in html file
 )
 
@@ -102,28 +102,49 @@ async def submit(name: str = Form(...), pwd: str = Form(...)):
     return UserDetails(name=name, password=pwd)
 
 # To render upload.html to client
+
+
 @app.get("/upload/", response_class=HTMLResponse)
 async def upload_file(request: Request):
-    return templates.TemplateResponse("upload.html", {"request":request})
+    return templates.TemplateResponse("upload.html", {"request": request})
 
 # To handle the upload operation to server
+
+
 @app.post("/uploader/")
 async def create_upload_file(file: UploadFile = File(...)):
-    with open("destination.png", "wb") as buffer: # Using any other name apart from destination.png brings up errors
+    # Using any other name apart from destination.png brings up errors
+    with open("destination.png", "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    
+
     return {"filename": file.filename}
+
 
 @app.post("/cookie/")
 def create_cookie():
-    content = {"message":"cookie set"}
-    response = JSONResponse(content = content)
+    content = {"message": "cookie set"}
+    response = JSONResponse(content=content)
     # Setting the cookie parameter on the response object
-    response.set_cookie(key = "username", value="admin")
-    
+    response.set_cookie(key="username", value="admin")
+
     return response
 
 # Reading the cookie object on the subsequent visits
+
+
 @app.get("/readcookie/")
 async def read_cookie(username: str = Cookie(None)):
     return {"username": username}
+
+
+# Reading and setting custom header parameters
+@app.get("/headers/")
+async def read_header(accept_language: Optional[str] = Header(None)):
+    return {"Accept-Language": accept_language}
+
+
+@app.get("/rspheader/", response_class=JSONResponse)
+def set_rsp_header():
+    content = {"message": "Hello World"}
+    headers = {"X-Web-Framework": "FastAPI", "Content-Language": "en-US"}
+    return JSONResponse(content=content, headers=headers)
