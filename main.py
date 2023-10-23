@@ -160,7 +160,7 @@ def set_rsp_header():
     return JSONResponse(content=content, headers=headers)
 
 
-@app.get("/marks/", response_model=Percent)
+@app.post("/marks/", response_model=Percent)
 async def get_percent(s1: Student):
     l = len(s1.marks)
     s1.percent = sum(s1.marks) / l
