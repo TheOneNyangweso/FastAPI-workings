@@ -16,11 +16,21 @@ class Student(BaseModel):
     id: int
     name: str = Field(None, title="Name of Student", max_length=10)
     subjects: List[str] = []
+    marks: List[int] = []
+    percent: float
+
+
+class Percent(BaseModel):
+    id: int
+    name: str = Field(None, title="Name of Student", max_length=10)
+    percent: float
 
 
 class UserDetails(BaseModel):
     name: str
     password: str
+
+
 # Populating request body using pydantic model object
 
 
@@ -148,3 +158,10 @@ def set_rsp_header():
     content = {"message": "Hello World"}
     headers = {"X-Web-Framework": "FastAPI", "Content-Language": "en-US"}
     return JSONResponse(content=content, headers=headers)
+
+
+@app.get("/marks/", response_model=Percent)
+async def get_percent(s1: Student):
+    l = len(s1.marks)
+    s1.percent = sum(s1.marks) / l
+    return s1
