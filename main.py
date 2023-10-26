@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import shutil
 from typing import List, Optional
@@ -10,6 +11,14 @@ from pydantic import BaseModel, Field
 import aiofiles
 
 app = FastAPI()
+
+
+origins = ["http://localhost:8000", "http://localhost",]
+
+app.add_middleware(CORSMiddleware, allow_origins=origins,
+                   allow_credentials=True,
+                   allow_methods=["*"],
+                   allow_headers=["*"],)
 
 
 class Student(BaseModel):
