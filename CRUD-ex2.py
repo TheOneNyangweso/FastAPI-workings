@@ -1,7 +1,7 @@
 # Python program to show working with crud operations in FastAPI
 # We shall now use a database dialect as database, instead of built in List
 from typing import List
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel, constr
 from sqlalchemy import create_engine
 from sqlalchemy.dialects import sqlite
@@ -72,27 +72,31 @@ async def get_all_books(db: Session = Depends(get_db)):
 async def get_one_book(id, db: Session = Depends(get_db)):
     rec = db.query(Books).filter(Books.id == id).first()
 
+# Bug fixed at update operation func
+
 
 @app.put("/update/{id}", response_model=Book)
-async def update_one_book(id : int, book: Book, db : Session = Depends(get_db)):
-    b1  = db.query(Books).filter(Books.id == id).first()
+async def update_one_book(id: int, book: Book, db: Session = Depends(get_db)):
+    b1 = db.query(Books).filter(Books.id == id).first()
+    if b1 is None:
+        raise HTTPException(status_code=404, detail="Book not found")
     b1.id = book.id
     b1.title = book.title
     b1.author = book.author
     b1.publisher = book.publisher
-    
+
     db.commit()
-    
-    return db.query(Books).filter(Books.id == id).first()
+
+    return db.query(Books).filter(Books.id == book.id).first()
 
 
 @app.delete("/book/{id}")
-async def delete_one_book(id : int, db : Session = Depends(get_db)):
+async def delete_one_book(id: int, db: Session = Depends(get_db)):
     try:
         db.query(Books).filter(Books.id == id).delete()
         db.commit()
-        
+
     except Exception as e:
         raise Exception(e)
-    
-    return {"delete status" : "success"}
+
+    return {"delete status": "success"}
